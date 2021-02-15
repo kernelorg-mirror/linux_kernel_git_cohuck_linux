@@ -35,6 +35,16 @@
 #include <asm/airq.h>
 
 /*
+ * Provide a knob to turn off support for older revisions. This is useful
+ * if we want to act as a non-transitional virtio device driver: requiring
+ * a minimum revision of 1 turns off support for legacy devices.
+ */
+static int min_revision;
+
+module_param(min_revision, int, 0444);
+MODULE_PARM_DESC(min_revision, "minimum transport revision to accept");
+
+/*
  * virtio related functions
  */
 
@@ -1249,7 +1259,10 @@ static int virtio_ccw_set_transport_rev(struct virtio_ccw_device *vcdev)
 			else
 				vcdev->revision--;
 		}
-	} while (ret == -EOPNOTSUPP);
+	} while (vcdev->revision >= min_revision && ret == -EOPNOTSUPP);
+
+	if (ret == -EOPNOTSUPP && vcdev->revision < min_revision)
+		ret = -EINVAL;
 
 	ccw_device_dma_free(vcdev->cdev, ccw, sizeof(*ccw));
 	ccw_device_dma_free(vcdev->cdev, rev, sizeof(*rev));
@@ -1293,8 +1306,12 @@ static int virtio_ccw_online(struct ccw_device *cdev)
 	vcdev->vdev.id.device = cdev->id.cu_model;
 
 	ret = virtio_ccw_set_transport_rev(vcdev);
-	if (ret)
+	if (ret) {
+		dev_warn(&cdev->dev,
+			 "Could not set a supported transport revision: %d\n",
+			 ret);
 		goto out_free;
+	}
 
 	ret = register_virtio_device(&vcdev->vdev);
 	if (ret) {

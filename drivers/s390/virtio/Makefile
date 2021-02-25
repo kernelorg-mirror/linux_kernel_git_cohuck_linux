@@ -4,3 +4,4 @@
 # Copyright IBM Corp. 2008
 
 obj-$(CONFIG_S390_GUEST) += virtio_ccw.o
+obj-$(CONFIG_VIRTIO_CCW_LEGACY) += virtio_ccw_legacy.o

@@ -26,6 +26,13 @@ menuconfig VIRTIO_MENU
 
 if VIRTIO_MENU
 
+config VIRTIO_LEGACY
+	def_bool y
+	help
+	  This option selects base support for legacy virtio devices prior
+	  to the virtio standard, such as those in the Virtio PCI Card
+	  0.9.X Draft and older.
+
 config VIRTIO_PCI
 	tristate "PCI driver for virtio devices"
 	depends on PCI
@@ -43,6 +50,7 @@ config VIRTIO_PCI_LEGACY
 	bool "Support for legacy virtio draft 0.9.X and older devices"
 	default y
 	depends on VIRTIO_PCI
+	select VIRTIO_LEGACY
 	help
           Virtio PCI Card 0.9.X Draft (circa 2014) and older device support.
 

@@ -938,6 +938,17 @@ config S390_GUEST
 	  Select this option if you want to run the kernel as a guest under
 	  the KVM hypervisor.
 
+config VIRTIO_CCW_LEGACY
+	def_bool y
+	prompt "Support for legacy virtio-ccw devices"
+	depends on S390_GUEST
+	select VIRTIO_LEGACY
+	help
+	  Enabling this option adds support for virtio-ccw paravirtual device
+	  drivers with legacy support, i.e. it enables transitional a
+	  transitional virtio-ccw driver.
+
+	  If unsure, say Y.
 endmenu
 
 menu "Selftests"

@@ -40,6 +40,10 @@ outlined by the architecture in DDI0487J.a D19.1.3 'Principles of the ID
 scheme for fields in ID register'. KVM does not allow ID register values that
 exceed the capabilities of the system.
 
+As KVM will enable new features by default, userspace that wants to provide a
+stable feature set regardless of the kernel version is advised to supply a
+complete set of values for all of the ID registers.
+
 .. warning::
    It is **strongly recommended** that userspace modify the ID register values
    before accessing the rest of the vCPU's CPU register state. KVM may use the

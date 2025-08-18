@@ -56,10 +56,11 @@ static void get_writable_masks(struct kvm_vm *vm)
 static bool reg_in_feature_id_range(uint64_t reg)
 {
 	return kvm_sys_reg_Op0(reg) == 3 &&
-	       kvm_sys_reg_Op1(reg) >= 0 && kvm_sys_reg_Op1(reg) <= 3 &&
-	       kvm_sys_reg_CRn(reg) == 0 &&
-	       kvm_sys_reg_CRm(reg) >= 0 && kvm_sys_reg_CRm(reg) <= 7 &&
-	       kvm_sys_reg_Op2(reg) >= 0 && kvm_sys_reg_Op2(reg) <= 7;
+		(kvm_sys_reg_Op1(reg) == 0 || kvm_sys_reg_Op1(reg) == 1 ||
+		 kvm_sys_reg_Op1(reg) == 3) &&
+		kvm_sys_reg_CRn(reg) == 0 &&
+		kvm_sys_reg_CRm(reg) >= 0 && kvm_sys_reg_CRm(reg) <= 7 &&
+		kvm_sys_reg_Op2(reg) >= 0 && kvm_sys_reg_Op2(reg) <= 7;
 }
 
 static uint64_t reg_get_mask(uint64_t reg)

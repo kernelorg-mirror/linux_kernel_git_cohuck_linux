@@ -78,11 +78,27 @@ static void dump_regs(struct kvm_vcpu *vcpu)
 	uint64_t reg, val[8];
 	int i, ret;
 
+	pr_info("All regs:\n");
 	for (i = 0; i < reg_list->n; i++) {
 		reg = reg_list->reg[i];
 		ret = __vcpu_get_reg(vcpu, reg, val);
 		if (!ret)
-			pr_info("%lx : %16lx %lx\n", reg, val[0], reg_get_mask(reg));
+			pr_info("%lx : %16lx\n", reg, val[0]);
+	}
+
+	pr_info("\nID regs:\n");
+	for (i = 0; i < reg_list->n; i++) {
+		reg = reg_list->reg[i];
+		if (!reg_in_feature_id_range(reg))
+			continue;
+		ret = __vcpu_get_reg(vcpu, reg, val);
+		if (!ret)
+			pr_info("%lx(%d, %d, %d, %d, %d) : %16lx %lx\n",
+				reg,
+				kvm_sys_reg_Op0(reg), kvm_sys_reg_Op1(reg),
+				kvm_sys_reg_CRn(reg), kvm_sys_reg_CRm(reg),
+				kvm_sys_reg_Op2(reg),
+				val[0], reg_get_mask(reg));
 	}
 
 	free(reg_list);
